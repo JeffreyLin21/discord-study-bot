@@ -11,10 +11,9 @@ async def on_ready():
 @client.event
 async def on_message(message):
 
-  global isStudying
-  global onBreak
   global studyTime
   global breakTime
+  global isStudying
   global msg
 
   msg = message
@@ -23,41 +22,20 @@ async def on_message(message):
     return
 
   if message.content == '!quit':
-    onBreak = False
     isStudying = False
+    await message.channel.send('Good study session!')
 
   if message.content.startswith('!study'):
     isStudying = True
-    onBreak = False
     command = message.content.split()
-    studyTime = int(command[1] * 60)
-    breakTime = int(command[2] * 60)
 
-    if not studyTime.isdigit() or not breakTime.isdigit():
+    try:
+      studyTime = int(command[1] * 1)
+      breakTime = int(command[2] * 1)
+      await message.channel.send('Study time!')
+      await studySession()
+    except:
       await message.channel.send('Sorry I don\'t understand')
-    else:
-      await studySession()
-
-async def breakSession():
-  global onBreak
-  global isStudying
-  global start
-  global breakTime
-  global msg
-
-  start = time.time()
-
-  if onBreak:
-    await msg.channel.send('Break Time!')
-
-  while onBreak:
-    print(time.time() - start)
-    if (time.time() - start) >= breakTime:
-      isStudying = True
-      onBreak = False
-      await studySession()
-      break
-
 
 async def studySession():
   global isStudying
@@ -67,16 +45,21 @@ async def studySession():
   global msg
 
   start = time.time()
-
-  if isStudying:
-    await msg.channel.send('Study Time!')
+  timer = studyTime
+  state = 1    
 
   while isStudying:
-    print(time.time() - start)
-    if (time.time() - start) >= studyTime:
-      isStudying = False
-      onBreak = True
-      await breakSession()
+    if not isStudying:
       break
+    if (time.time() - start) >= timer:
+      if state == 1:
+        state = 0
+        timer = breakTime
+        await msg.channel.send('Break time!')
+      else:
+        state = 1
+        timer = studyTime
+        await msg.channel.send('Study time!')
+      start = time.time()
 
 client.run(os.environ['token'])
