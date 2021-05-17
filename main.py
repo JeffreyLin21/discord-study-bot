@@ -5,41 +5,63 @@ import asyncio
 from discord.ext import commands
 
 client = commands.Bot(command_prefix='!') 
+client.remove_command('help')
+
+@client.command(name = 'help')
+async def help(context):
+  help_embed = discord.Embed(title = 'Help', description = 'List of valid commands', color = 0x831b6d)
+
+  help_embed.add_field(name = '!study [duration of study period] [duration of break] [number of cycles]', value = 'begin study session', inline = False)
+  help_embed.add_field(name = '!study', value = 'Leave all field blank for recommened settings !study 30 5 4', inline = False) 
+  help_embed.add_field(name = '!study [duration of study period] [duration of break]', value = 'Leave cycle field blank for infinite session', inline = False) 
+  help_embed.add_field(name = '!quit', value = 'end current study session', inline = False) 
+  help_embed.add_field(name = '!status', value = 'check timer of current study session', inline = False)
+
+  await context.message.channel.send(embed = help_embed) 
+
+@client.command(name='status')
+async def status(context):
+  global start
+  try:
+    timer_embed = discord.Embed(title = 'Timer', description = str(int(timer-(time.time()-start))//60) + ':' + str(int(round(((timer-(time.time()-start))%60), 0))) + ' minutes remaining', color = 0x831b6d)
+  except:
+    timer_embed = discord.Embed(title = 'Looks like a study session hasn\'t started yet.')
+  await context.message.channel.send(embed = timer_embed)
 
 @client.command(name='study')
-async def study(context):
-
+async def study(context, *args):
+  global start
   global isStudying
+  global timer
   change = -1
   isStudying = True
   state = 1    
   start = time.time() 
-  command = context.message.content.split()
   channel = context.message.channel
 
   try:
 
-    if len(command) == 1:
-      studyTime = 30
-      breakTime = 5
+    if len(args) == 0:
+      studyTime = 1800
+      breakTime = 300
       cycles = 4
-    elif len(command) == 3:
-      studyTime = int(command[1]) * 60
-      breakTime = int(command[2]) * 60    
+    elif len(args) == 2:
+      studyTime = int(args[0]) * 60
+      breakTime = int(args[1]) * 60    
       cycles = 1
       change = 0
-    elif len(command) == 4:
-      studyTime = int(command[1]) * 60
-      breakTime = int(command[2]) * 60     
-      cycles =  int(command[3]) * 2
+    elif len(args) == 3:
+      studyTime = int(args[0]) * 60
+      breakTime = int(args[1]) * 60     
+      cycles =  int(args[2]) * 2
 
-    study_embed = discord.Embed(title = 'Study Time!', description = ('Current session: ' + str(studyTime) + ' min remaining'))
+    study_embed = discord.Embed(title = 'Study Time!', description = ('Current session: ' + str(int(studyTime/60)) + ':00' + ' min remaining'), color=0x831b6d)
     study_embed.set_footer(text = 'Type !status to check current timer')
 
-    break_embed = discord.Embed(title = 'Break Time!', description = ('Current session: ' + str(breakTime) + ' min remaining'))
+    break_embed = discord.Embed(title = 'Break Time!', description = ('Current session: ' + str(int(breakTime/60)) + ':00' + ' min remaining'), color=0x831b6d)
     study_embed.set_footer(text = 'Type !status to check current timer')
-    
-    end_embed = discord.Embed(title = 'Good session!')
+
+    end_embed = discord.Embed(title = 'Good session!', color=0x831b6d)
 
     await channel.send(embed = study_embed)
     start = time.time()
@@ -63,12 +85,15 @@ async def study(context):
     await channel.send(embed = end_embed)
   except Exception as e: 
     print(e)
-    await channel.send('!study [Duration of studying] [Duration of break] [Cycles]')
-    await channel.send('Leave all field blank for recommened settings (30 5 4) or leave cycles blank for unlimited session')
-  
+    end_embed = discord.Embed(description = '!study [Duration of studying] [Duration of break] [Cycles]', color=0x831b6d)
+    end_embed.set_footer(text = 'Leave all field blank for recommened settings !study 30 5 4 or leave cycles blank for an infinite session')
+    await channel.send(embed = end_embed)
+
 @client.command(name='quit')
 async def quit(context):
   global isStudying
+  global start
+  start = ' '
   isStudying = False
 
 @client.event
