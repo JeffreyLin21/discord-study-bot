@@ -3,6 +3,7 @@ import discord
 import time
 import asyncio
 from discord.ext import commands
+from webserver import refresh
 
 client = commands.Bot(command_prefix='!') 
 client.remove_command('help')
@@ -61,7 +62,7 @@ async def study(context, *args):
     break_embed = discord.Embed(title = 'Break Time!', description = ('Current session: ' + str(int(breakTime/60)) + ':00' + ' min remaining'), color=0x831b6d)
     study_embed.set_footer(text = 'Type !status to check current timer')
 
-    end_embed = discord.Embed(title = 'Good session!', color=0x831b6d)
+    quit_embed = discord.Embed(title = 'Good session!', color=0x831b6d)
 
     await channel.send(embed = study_embed)
     start = time.time()
@@ -82,12 +83,15 @@ async def study(context, *args):
           if isStudying and cycles > 0:
             await channel.send(embed = study_embed)
         start = time.time()
-    await channel.send(embed = end_embed)
+    await channel.send(embed = quit_embed)
   except Exception as e: 
     print(e)
-    end_embed = discord.Embed(description = '!study [Duration of studying] [Duration of break] [Cycles]', color=0x831b6d)
-    end_embed.set_footer(text = 'Leave all field blank for recommened settings !study 30 5 4 or leave cycles blank for an infinite session')
-    await channel.send(embed = end_embed)
+    if start == ' ':
+      await channel.send(embed = quit_embed)
+    else:
+      end_embed = discord.Embed(description = '!study [Duration of studying] [Duration of break] [Cycles]', color=0x831b6d)
+      end_embed.set_footer(text = 'Leave all field blank for recommened settings !study 30 5 4 or leave cycles blank for an infinite session')
+      await channel.send(embed = end_embed)
 
 @client.command(name='quit')
 async def quit(context):
@@ -96,8 +100,28 @@ async def quit(context):
   start = ' '
   isStudying = False
 
+@client.command(name = 'remind')
+async def remind(context, *args):
+  current = time.time()
+  message = ''
+  try:
+    for i in args[2:]:
+      message += (i + ' ')
+    while (time.time() - current != int(args[0])):
+      await asyncio.sleep(1)
+
+    msg_embed = discord.Embed(description = message, color=0x831b6d)
+    await context.message.channel.send(embed = msg_embed)
+  except:
+    end_embed = discord.Embed(description = '!remind [Number of minutes to remind in] [Message to send]', color=0x831b6d)
+    await context.message.channel.send(embed = end_embed)
+  
+
+
+
 @client.event
 async def on_ready():
   print('Bot is online')
 
+#refresh()
 client.run(os.environ['token'])
