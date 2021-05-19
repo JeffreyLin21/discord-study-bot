@@ -103,16 +103,17 @@ async def quit(context):
 @client.command(name = 'remind')
 async def remind(context, *args):
   current = time.time()
-  message = ''
+  message = 'Reminder: '
   try:
-    for i in args[2:]:
+    for i in args[1:]:
       message += (i + ' ')
-    while (time.time() - current != int(args[0])):
+    while (time.time() - current <= int(args[0])*60):
       await asyncio.sleep(1)
-
+    print(message)
     msg_embed = discord.Embed(description = message, color=0x831b6d)
     await context.message.channel.send(embed = msg_embed)
-  except:
+  except Exception as e: 
+    print(e)
     end_embed = discord.Embed(description = '!remind [Number of minutes to remind in] [Message to send]', color=0x831b6d)
     await context.message.channel.send(embed = end_embed)
   
