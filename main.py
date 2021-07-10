@@ -127,4 +127,5 @@ async def remind(context, *args):
 async def on_ready():
   print('Bot is online')
 
-client.run(os.environ['token'])
+token = open("token.txt", "r")
+client.run(token.read())
