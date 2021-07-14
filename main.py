@@ -7,6 +7,7 @@ from discord.ext import commands
 client = commands.Bot(command_prefix='!') 
 client.remove_command('help')
 
+# commands
 @client.command(name = 'help')
 async def help(context):
   help_embed = discord.Embed(title = 'Help', description = 'List of valid commands', color = 0x831b6d)
