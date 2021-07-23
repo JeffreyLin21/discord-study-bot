@@ -1,3 +1,4 @@
+from collections import deque
 import os
 import discord
 import time
@@ -5,6 +6,7 @@ import asyncio
 from discord.ext import commands
 
 client = commands.Bot(command_prefix='!') 
+user_study_list = {}
 client.remove_command('help')
 
 # commands
@@ -107,9 +109,81 @@ async def remind(context, remind_time = 1, message = 'not sure why, but you crea
     end_embed = discord.Embed(description = '!remind [Number of minutes to remind in] [Message to send]', color=0x831b6d)
     await context.message.author.send(embed = end_embed)
 
+@client.group(name = 'todo')
+async def todo(context):
+  return
+
+@todo.command(name = 'help')
+async def help(context):
+  msg_embed = discord.Embed(title = '!todo [subcommand]', description = 'subcommands: add, next, clear, list', color=0x831b6d)
+  await context.message.author.send(embed = msg_embed)
+
+@todo.command(name = 'add')
+async def add(context, *topic):
+  try: 
+
+    msg = ''
+    for i in topic:
+      msg += i + ' '
+
+    if (context.message.author in user_study_list):
+      user_study_list[context.message.author].append(msg)
+    else:
+      user_study_list[context.message.author] = deque()
+      user_study_list[context.message.author].append(msg)
+    msg_embed = discord.Embed(description = "'" + msg[:-1] + "'" + ' has been added to the todo list', color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+  except Exception as e:
+    print(e)
+    msg_embed = discord.Embed(description = 'Please enter something to study', color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+  
+@todo.command(name = 'next')
+async def add(context):
+  try: 
+    if (not user_study_list[context.message.author]):
+      msg_embed = discord.Embed(description = 'There are no more topics to cover!', color=0x831b6d)
+    else:
+      user_study_list[context.message.author].popleft()
+      msg_embed = discord.Embed(description = user_study_list[context.message.author][0], color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+  except Exception as e:
+    print(e)
+    msg_embed = discord.Embed(description = 'Hm... looks like something went wrong', color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+
+@todo.command(name = 'clear')
+async def clear(context, limit = -1):
+  try: 
+    if limit == -1:
+      user_study_list[context.message.author].clear()
+    else:
+      for i in range(0, limit):
+        user_study_list[context.message.author].popleft()
+    msg_embed = discord.Embed(description = 'Topics have been cleared!', color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+  except Exception as e:
+    print(e)
+    msg_embed = discord.Embed(title = '!todo clear [number of topics to clear]', description = 'Leave last field blank to clear all', color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+
+@todo.command(name = 'list')
+async def list(context):
+  try: 
+    msg = str(user_study_list[context.message.author])
+    msg_embed = discord.Embed(description = msg[7: -2], color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+  except Exception as e:
+    print(e)
+    msg_embed = discord.Embed(description = 'Hm... looks like you don\'t have a list', color=0x831b6d)
+    await context.message.author.send(embed = msg_embed)
+
 @client.event
 async def on_ready():
   print('Bot is online')
 
 token = open("token.txt", "r")
 client.run(token.read())
+
+
+# dictionary = {user id, ['list', 'of', 'items']}
