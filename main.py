@@ -28,18 +28,20 @@ async def start(context):
 @client.command(name='status')
 async def status(context):
   global start
+  global timer
+  print (timer-(time.time()-start))
   try:
-    timer_embed = discord.Embed(title = 'Timer', description = str(int(timer-(time.time()-start))//60) + ':' + str(int(round(((timer-(time.time()-start))%60), 0))) + ' minutes remaining', color = 0x831b6d)
+    timer_embed = discord.Embed(title = 'Timer', description = str(int(timer-(time.time()-start)/60)) + ':' + str(int(round((((timer * 60)-(time.time()-start))%60), 0))) + ' minutes remaining', color = 0x831b6d)
   except:
     timer_embed = discord.Embed(title = 'Looks like a study session hasn\'t started yet.')
   await context.message.author.send(embed = timer_embed)
 
 @client.command(name='study')
-async def study(context, *args):
+async def study(context, studyTime = 30, breakTime = 5, cycles = 4):
+
   global start
   global isStudying
   global timer
-  change = -1
   isStudying = True
   state = 1    
   start = time.time() 
@@ -47,24 +49,10 @@ async def study(context, *args):
 
   try:
 
-    if len(args) == 0:
-      studyTime = 1800
-      breakTime = 300
-      cycles = 4
-    elif len(args) == 2:
-      studyTime = int(args[0]) * 60
-      breakTime = int(args[1]) * 60    
-      cycles = 1
-      change = 0
-    elif len(args) == 3:
-      studyTime = int(args[0]) * 60
-      breakTime = int(args[1]) * 60     
-      cycles =  int(args[2]) * 2
-
-    study_embed = discord.Embed(title = 'Study Time!', description = ('Current session: ' + str(int(studyTime/60)) + ':00' + ' min remaining'), color=0x831b6d)
+    study_embed = discord.Embed(title = 'Study Time!', description = ('Current session: ' + str(int(studyTime)) + ':00' + ' min remaining'), color=0x831b6d)
     study_embed.set_footer(text = 'Type !status to check current timer')
 
-    break_embed = discord.Embed(title = 'Break Time!', description = ('Current session: ' + str(int(breakTime/60)) + ':00' + ' min remaining'), color=0x831b6d)
+    break_embed = discord.Embed(title = 'Break Time!', description = ('Current session: ' + str(int(breakTime)) + ':00' + ' min remaining'), color=0x831b6d)
     study_embed.set_footer(text = 'Type !status to check current timer')
 
     quit_embed = discord.Embed(title = 'Good session!', color=0x831b6d)
@@ -73,10 +61,10 @@ async def study(context, *args):
     start = time.time()
     timer = studyTime
     
-    while isStudying and cycles > 0:
+    while isStudying and cycles != 0:
       await asyncio.sleep(1)
-      if (time.time() - start) >= timer:
-        cycles = cycles + change
+      if ((time.time() - start)/60.0) >= timer:
+        cycles -= 1
         if state == 1:
           state = 0
           timer = breakTime
@@ -106,13 +94,11 @@ async def quit(context):
   isStudying = False
 
 @client.command(name = 'remind')
-async def remind(context, *args):
+async def remind(context, remind_time = 1, message = 'not sure why, but you created this reminder!'):
   current = time.time()
-  message = 'Reminder: '
+  reminder = 'Reminder: ' + message
   try:
-    for i in args[1:]:
-      message += (i + ' ')
-    while (time.time() - current <= int(args[0])*60):
+    while (time.time() - current <= remind_time * 60):
       await asyncio.sleep(1)
     msg_embed = discord.Embed(description = message, color=0x831b6d)
     await context.message.author.send(embed = msg_embed)
@@ -120,9 +106,6 @@ async def remind(context, *args):
     print(e)
     end_embed = discord.Embed(description = '!remind [Number of minutes to remind in] [Message to send]', color=0x831b6d)
     await context.message.author.send(embed = end_embed)
-  
-
-
 
 @client.event
 async def on_ready():
