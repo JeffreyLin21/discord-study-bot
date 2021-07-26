@@ -19,11 +19,11 @@ class Reminder(commands.Cog):
       while (time.time() - current <= remind_time * 60):
         await asyncio.sleep(1)
       msg_embed = discord.Embed(description = message, color=0x831b6d)
-      await ctx.message.author.send(embed = msg_embed)
+      await ctx.author.send(embed = msg_embed)
     except Exception as e: 
       print(e)
       end_embed = discord.Embed(description = '!remind [Number of minutes to remind in] [Message to send]', color=0x831b6d)
-      await ctx.message.author.send(embed = end_embed)
+      await ctx.author.send(embed = end_embed)
 
   #@reminder.command(name = 'list')
   #@reminder.command(name = 'clear')

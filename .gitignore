@@ -1,1 +1,8 @@
 token.txt
+database/__pycache__
+cogs/__pycache__
+cogs/__pycache__/help.cpython-39.pyc
+cogs/__pycache__/reminder.cpython-39.pyc
+cogs/__pycache__/study.cpython-39.pyc
+cogs/__pycache__/todo.cpython-39.pyc
+database/discord_users.db

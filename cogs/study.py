@@ -19,7 +19,7 @@ class Study(commands.Cog):
       timer_embed = discord.Embed(title = 'Timer', description = str(int(timer-(time.time()-start)/60)) + ':' + str(int(round((((timer * 60)-(time.time()-start))%60), 0))) + ' minutes remaining', color = 0x831b6d)
     except:
       timer_embed = discord.Embed(title = 'Looks like a study session hasn\'t started yet.')
-    await ctx.message.author.send(embed = timer_embed)
+    await ctx.author.send(embed = timer_embed)
 
   @study.command(name='start')
   async def start(self, ctx, studyTime = 30, breakTime = 5, cycles = 4):
@@ -30,7 +30,7 @@ class Study(commands.Cog):
     isStudying = True
     state = 1    
     start = time.time() 
-    author = ctx.message.author
+    author = ctx.author
 
     try:
 
@@ -72,8 +72,10 @@ class Study(commands.Cog):
         await author.send(embed = end_embed)
 
   @study.command(name='quit')
-  async def quit(self):
+  async def quit(self, ctx):
     global isStudying
+    global start
+    start = ' '
     isStudying = False
 
 def setup(client):
