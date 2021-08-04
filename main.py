@@ -1,13 +1,12 @@
 import os
 import discord
-from database import init_database 
+from cogs.database import init_database 
 from discord.ext import commands
 
 client = commands.Bot(command_prefix='/') 
 
 @client.event
 async def on_ready():
-  
   await client.change_presence(activity=discord.Game('Studying'))
   print('Bot is online')
 
@@ -20,34 +19,37 @@ async def check_self_id(ctx):
 def verification(ctx):
   return ctx.author.id == 220287401833136129
 
-@client.event
+@client.command()
 @commands.check(verification)
-async def reload_extention(ctx, extention = ''):
-
+async def reload_extention(ctx):
   try:
-    if (extention == ''):
+
+    if (ctx == ''):
       for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
+          if filename == '__init__.py':
+            continue
           client.unload_extension(f'cogs.{filename[:-3]}')
           client.load_extension(f'cogs.{filename[:-3]}')
           print (f'Cog:\'{filename}\' was reloaded')
       print ('All cogs were reloaded')
+
     else:
-      client.unload_extension(f'cogs.{extention}')
-      client.load_extension(f'cogs.{extention}')
+      client.unload_extension(f'cogs.{ctx}')
+      client.load_extension(f'cogs.{ctx}')
 
   except Exception as e:
     print (e)
     print ('Warning some cogs could not be loaded')   
 
 def load_bot():
-
   client.remove_command('help')
-  
 
   try:
     for filename in os.listdir('./cogs'):
       if filename.endswith('.py'):
+        if filename == '__init__.py':
+          continue
         client.load_extension(f'cogs.{filename[:-3]}')
         print (f'Cog:\'{filename}\' was loaded')
     print ('All cogs loaded')
