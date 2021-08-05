@@ -6,3 +6,8 @@ cogs/__pycache__/reminder.cpython-39.pyc
 cogs/__pycache__/study.cpython-39.pyc
 cogs/__pycache__/todo.cpython-39.pyc
 database/discord_users.db
+cogs/database/discord_users.db
+cogs/database/__pycache__/__init__.cpython-39.pyc
+cogs/database/__pycache__/init_database.cpython-39.pyc
+cogs/database/__pycache__/discord_database.cpython-39.pyc
+discord_users.db

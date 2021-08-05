@@ -21,7 +21,7 @@ def verification(ctx):
 
 @client.command()
 @commands.check(verification)
-async def reload_extention(ctx):
+async def reload_extension(ctx):
   try:
 
     if (ctx == ''):

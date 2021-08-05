@@ -15,9 +15,12 @@ class Todo(commands.Cog):
     return ctx
 
   @todo.command(name = 'add')
-  async def add(ctx, *msg):
+  async def add(self, ctx, *args):
     global user_study_list
-    try: 
+    try:
+      msg = ''
+      for i in args:
+        msg += i
       if (ctx.message.author in user_study_list):
         user_study_list[ctx.message.author].append(msg)
       else:
@@ -31,7 +34,7 @@ class Todo(commands.Cog):
       await ctx.message.author.send(embed = msg_embed)
         
   @todo.command(name = 'next')
-  async def add(self, ctx):
+  async def next(self, ctx):
     try: 
       if (not user_study_list[ctx.message.author]):
         msg_embed = discord.Embed(description = 'There are no more topics to cover!', color=0x831b6d)
