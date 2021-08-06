@@ -14,9 +14,15 @@ class Remind(commands.Cog):
     return ctx
 
   @remind.command(name = 'add')
-  async def add(self, ctx, remind_time = 1, message = 'Not sure why, but you created this reminder!'):
+  async def add(self, ctx, remind_time = 1, *message):
     current = time.time()
-    reminder = 'Reminder: ' + message
+
+    msg = ' '.join(message)
+
+    if msg == '':
+      msg = 'Not sure why, but you created this reminder!'
+
+    reminder = 'Reminder: ' + msg
 
     user_reminder_list[reminder] = [remind_time, time.time()]
 
