@@ -11,3 +11,4 @@ cogs/database/__pycache__/__init__.cpython-39.pyc
 cogs/database/__pycache__/init_database.cpython-39.pyc
 cogs/database/__pycache__/discord_database.cpython-39.pyc
 discord_users.db
+api.txt
