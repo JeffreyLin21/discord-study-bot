@@ -31,6 +31,8 @@ class Remind(commands.Cog):
 
     try:
       while (time.time() - current <= remind_time * 60):
+        if not user_reminder_list[reminder]:
+          return
         await asyncio.sleep(1)
       user_reminder_list.pop(reminder)
       msg_embed = discord.Embed(description = reminder, color=0x831b6d)

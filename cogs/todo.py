@@ -17,10 +17,8 @@ class Todo(commands.Cog):
   @todo.command(name = 'add')
   async def add(self, ctx, *args):
     global user_study_list
-    try:
-      msg = ''
-      for i in args:
-        msg += i
+    try: 
+      msg = ' '.join(args)
       if (ctx.message.author in user_study_list):
         user_study_list[ctx.message.author].append(msg)
       else:
