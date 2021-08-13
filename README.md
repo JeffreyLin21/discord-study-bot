@@ -1,4 +1,4 @@
-# discord-study-bot
+# Discord Study Bot
 ![alt text](https://i.imgur.com/Eqxa70g.png)
 
 ## Description
